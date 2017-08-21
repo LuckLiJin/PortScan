@@ -98,13 +98,16 @@ class PortScan:
                     dest_ip = s.inet_ntoa(ip_datagram.ip_dest_addr)
                     src_port = tcp_segment.tcp_src_port
                     dest_port = tcp_segment.tcp_dest_port
-                    self.check_ip(src_ip, src_port)
+                    if self.check_ip(src_ip, src_port):
+                        self.send((src_ip, src_port), rst = 1)
     def check_ip(self, ip, port):
         key = "{0}:{1}".format(ip, port)
         if self.scans.get(key):
             print "{} is open".format(key)
             self.scans[key].cancel()
             del self.scans[key]
+            return True
+        return False
 
     def _get_local_mac(self, iface):
         '''
